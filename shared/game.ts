@@ -1,0 +1,13 @@
+export type Role='hunter'|'runner'; export type Phase='lobby'|'headstart'|'active'|'ended';
+export type Position={lat:number;lng:number;accuracy:number;at:number};
+export type Player={id:string;token:string;name:string;role:Role;ready:boolean;connected:boolean;captured:boolean;position?:Position;lastSeen:number};
+export type Settings={durationMin:number;captureRadius:number;headStartSec:number;runnerRevealSec:number};
+export type Lobby={code:string;hostId:string;phase:Phase;players:Map<string,Player>;settings:Settings;startedAt?:number;endsAt?:number;headStartEndsAt?:number;createdAt:number};
+export const defaults:Settings={durationMin:30,captureRadius:35,headStartSec:60,runnerRevealSec:120};
+export const distance=(a:Pick<Position,'lat'|'lng'>,b:Pick<Position,'lat'|'lng'>)=>{const R=6371000,r=Math.PI/180,dLat=(b.lat-a.lat)*r,dLng=(b.lng-a.lng)*r;const q=Math.sin(dLat/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLng/2)**2;return 2*R*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));};
+export const bearing=(a:Pick<Position,'lat'|'lng'>,b:Pick<Position,'lat'|'lng'>)=>{const r=Math.PI/180,dl=(b.lng-a.lng)*r,y=Math.sin(dl)*Math.cos(b.lat*r),x=Math.cos(a.lat*r)*Math.sin(b.lat*r)-Math.sin(a.lat*r)*Math.cos(b.lat*r)*Math.cos(dl);return (Math.atan2(y,x)/r+360)%360};
+export const safeName=(v:unknown)=>typeof v==='string'&&v.trim().length>0&&v.trim().length<=22?v.trim().replace(/[<>]/g,''):null;
+export const validPosition=(p:unknown):p is Position=>!!p&&typeof p==='object'&&Number.isFinite((p as Position).lat)&&Number.isFinite((p as Position).lng)&&Math.abs((p as Position).lat)<=90&&Math.abs((p as Position).lng)<=180&&Number.isFinite((p as Position).accuracy)&&((p as Position).accuracy)>=0;
+export const canCapture=(hunter?:Position,runner?:Position,radius=35)=>!!hunter&&!!runner&&hunter.accuracy+runner.accuracy<radius*1.8&&distance(hunter,runner)<=radius;
+export const runnerRadar=(runner:Position,hunters:Player[])=>hunters.filter(p=>p.role==='hunter'&&p.position).map(p=>({id:p.id,name:p.name,distance:Math.round(distance(runner,p.position!)),bearing:Math.round(bearing(runner,p.position!)),at:p.position!.at,connected:p.connected}));
+export const startRequirements=(players:Player[])=>{const issues:string[]=[];if(!players.some(p=>p.role==='hunter'))issues.push('Need at least one hunter.');if(!players.some(p=>p.role==='runner'))issues.push('Need at least one runner.');const unready=players.filter(p=>!p.ready);if(unready.length)issues.push(`Waiting for ready signal: ${unready.map(p=>p.name).join(', ')}.`);return issues;};

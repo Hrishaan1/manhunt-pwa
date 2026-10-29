@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: trail-signal
+    runtime: docker
+    plan: free
+    numInstances: 1
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: VITE_TILE_URL
+        value: https://tile.openstreetmap.org/{z}/{x}/{y}.png
+      - key: VITE_TILE_ATTRIBUTION
+        value: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

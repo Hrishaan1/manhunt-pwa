@@ -1,0 +1,1 @@
+{"extends":"./tsconfig.json","compilerOptions":{"module":"NodeNext","moduleResolution":"NodeNext","outDir":"dist-server","noEmit":false},"include":["server","shared/game.ts"],"exclude":["**/*.test.ts"]}

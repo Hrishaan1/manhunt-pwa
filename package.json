@@ -1,0 +1,38 @@
+{
+  "name": "gps-manhunt",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "concurrently -k \"vite\" \"tsx watch server/index.ts\"",
+    "clean": "node -e \"const{rmSync}=require('node:fs');rmSync('dist',{recursive:true,force:true});rmSync('dist-server',{recursive:true,force:true})\"",
+    "build": "npm run clean && vite build && tsc -p tsconfig.server.json",
+    "start": "NODE_ENV=production node dist-server/server/index.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "leaflet": "^1.9.4",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/leaflet": "^1.9.16",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
+    "vitest": "^2.1.8",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
